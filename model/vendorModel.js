@@ -13,18 +13,16 @@ const vendorSchema = new mongoose.Schema({
         type: String,
         default: 'vendor'
     },
-    firstName: {
-        type: String,
-        trim: true
-    },
-    lastName: {
+    name: {
         type: String,
         trim: true,
+        required: true
     },
     email: {
         type: String,
         unique: true,
         trim: true,
+        required: true,
         validate(value) {
             if (!validator.isEmail(value)) {
                 throw new Error("Enter a valid email address");
@@ -32,7 +30,7 @@ const vendorSchema = new mongoose.Schema({
         },
     },
     contact: {
-        type: String,
+        type: Number,
         validate(value) {
             if (!value.length === 10) {
                 throw new Error("Enter a valid contact number");
@@ -41,108 +39,86 @@ const vendorSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        trim: true
-    },
-    membershipId: {
-        type: String,
-        trim: true
-    },
-    preferredPlanId: {
-        type: String,
-        trim: true
-    },
-    currentMemberType: { type: String },
-    previosMemberType: { type: String },
-    cardStatus: { type: String },
-    isAppliedForCard: { type: String },
-    membershipPlan: {
-        type: String,
-        enum: ['Unsubscribed', 'Basic', 'Elite', "Founder"],
-        default: 'Unsubscribed'
-    },
-    subscriptionId: {
-        type: String,
         trim: true,
-    },
-    prevSubscriptionIds: [
-        { type: String, trim: true }
-    ],
-    linkedIn: {
-        type: String,
-        trim: true
-    },
-    twitter: {
-        type: String,
-        trim: true
-    },
-    angleList: {
-        type: String,
-        trim: true
-    },
-    instagram: {
-        type: String,
-        trim: true
-    },
-    companyName: {
-        type: String,
-        trim: true
-    },
-    professionalTitle: {
-        type: String,
-        trim: true
-    },
-    dob: {
-        type: Date
-    },
-    street: {
-        type: String,
-        trim: true
-    },
-    unit: {
-        type: String,
-        trim: true
-    },
-    country: {
-        type: String,
-        trim: true
-    },
-    city: {
-        type: String,
-        trim: true
+        required: true
     },
     state: {
         type: String,
-        trim: true
+        trim: true,
+        default: null
+    },
+    city: {
+        type: String,
+        trim: true,
+        default: null
     },
     pincode: {
+        type: Number,
+        trim: true,
+        default: null
+    },
+    area: {
         type: String,
-        trim: true
+        trim: true,
+        default: null
     },
-    bio: {
+    biography: {
         type: String,
-        trim: true
+        trim: true,
+        default: null
     },
-    areaOfExpertise: {
-        type: String,
-        trim: true
-    },
-    passions: {
-        type: String,
-        trim: true
-    },
-    status: {
-        type: String
-    },
-    redeemed: [
-        { type: String }
+    workHistory: [{
+        title: String,
+        duration: String
+    }
     ],
-    saved: [
-        { type: String }
+    lookingfor: [{
+        title: String,
+        duration: String
+    }
     ],
+    likedShot: [{
+        id: String,
+        image: String,
+        performance: Array
+    }
+    ],
+    shopProduct: [{
+        id: String,
+        image: String,
+        price: Number
+    }
+    ],
+    shotCollections: [{
+        id: String,
+        image: String,
+        performance: Array
+    }
+    ],
+    socialLinks: [{
+        platform: String,
+        url: String,
+    }
+    ],
+
+    area: {
+        type: String,
+        trim: true,
+        default: null
+    },
+    skill: [String],
+    follower: [String],
+    following: [String],
     resetToken: String,
     expireToken: Date,
-    otp: { type: String },
-    otpExpireIn: { type: Date, expireAfterSeconds: 150 },
+    otp: {
+        type: String,
+        default: null
+    },
+    otpExpireIn: {
+        type: Date, expireAfterSeconds: 150,
+        default: null
+    },
 
     tokens: [{
         token: {
@@ -153,6 +129,12 @@ const vendorSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+vendorSchema.virtual('Shot', {
+    ref: 'shotModel',
+    localField: '_id',
+    foreignField: 'owner'
+  })
 
 vendorSchema.methods.toJSON = function () {
     const vendor = this
@@ -170,14 +152,14 @@ vendorSchema.methods.toJSON = function () {
 
 vendorSchema.methods.generateAuthToken = async function () {
     const vendor = this;
-    const token = jwt.sign({ _id: vendor._id.toString() }, JWT, { expiresIn: '1h' });
+    const token = jwt.sign({ _id: vendor._id.toString() }, JWT);
     vendor.tokens = vendor.tokens.concat({ token });
     await vendor.save();
     return token;
 };
 
 vendorSchema.statics.findByCredentials = async (email, password) => {
-    const vendor = await vendor.findOne({
+    const vendor = await Vendor.findOne({
         email
     });
     if (!vendor) {

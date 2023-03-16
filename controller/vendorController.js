@@ -13,7 +13,7 @@ export const get_vendor = async (req, res) => {
     }
     response.r200(res, vendor)
   } catch (error) {
-    res.send(error)
+    res.status(500).send(error)
   }
 }
 
@@ -23,10 +23,9 @@ export const add_vendor = async (req, res) => {
     const vendor = await new VENDOR(req.body)
     await vendor.save()
     const token = await vendor.generateAuthToken()
-
-    response.r200(res, { vendor, token })
+    response.r200(res, { name:vendor?.name, token })
   } catch (error) {
-    res.send(error)
+    res.status(500).send(error)
   }
 }
 
@@ -34,13 +33,13 @@ export const add_vendor = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const vendor = await VENDOR.findByCredentials(req.body.email, req.body.password)
-    const token = await VENDOR.generateAuthToken()
+    const token = await vendor.generateAuthToken()
     if (!vendor) {
       throw new Error('Invalid Attempt, vendor not Found!')
     }
-    response.r200(res, { vendor, token })
+    response.r200(res, { name:vendor?.name, token })
   } catch (error) {
-    res.status(400).send({ message: error.message })
+    res.status(500).send({ message: error.message })
   }
 }
 

@@ -13,7 +13,7 @@ export const get_admin = async (req, res) => {
     }
     response.r200(res, admin)
   } catch (error) {
-    res.send(error)
+    res.status(500).send(error);
   }
 }
 
@@ -26,7 +26,7 @@ export const add_admin = async (req, res) => {
 
     response.r200(res, { admin, token })
   } catch (error) {
-    res.send(error)
+    res.status(500).send(error);
   }
 }
 
@@ -40,7 +40,7 @@ export const login = async (req, res) => {
     }
     response.r200(res, { admin, token })
   } catch (error) {
-    res.status(400).send({ message: error.message })
+    res.status(500).send({ message: error.message })
   }
 }
 

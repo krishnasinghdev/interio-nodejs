@@ -10,7 +10,6 @@ const loginAuth = async (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '')
     const decoded = jwt.verify(token, JWT)
     let user;
-
     if (req.body.role === '_admin') {
       user = await ADMIN.findOne({ _id: decoded._id, 'tokens.token': token })
     } else {
@@ -18,13 +17,14 @@ const loginAuth = async (req, res, next) => {
     }
 
     if (!user) {
-      throw new Error()
+      throw new Error('Token Expired!')
     }
     req.token = token
     req.user = user
+    req._id = decoded._id
     next()
   } catch (error) {
-    res.status(401).send({ error: 'Please Authenticate' })
+    res.status(401).send({ error: 'Please Authenticate', error })
   }
 }
 
