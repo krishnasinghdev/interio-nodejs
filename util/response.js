@@ -1,4 +1,4 @@
-import _ from 'underscore'
+import _ from "underscore";
 
 const HttpStatus = {
   OK: 200,
@@ -10,52 +10,51 @@ const HttpStatus = {
   INTERNAL_SERVER_ERROR: 500,
   Not_Acceptable: 406,
   Conflict: 409,
-  Request_Timeout: 408
-}
+  Request_Timeout: 408,
+};
 
 const msg = {
-  success: 'success',
-  serverError: 'serverError',
-  apiNotFound: 'apiNotFound',
-  invalidParams: 'invalidParams',
-  dataNotFound: 'dataNotFound',
-  noPermission: 'noPermission',
-  insertSuccess: 'insertSuccess',
-  insertBulkSuccess: 'insertBulkSuccess',
-  updateSuccess: 'updateSuccess',
-  deleteSuccess: 'deleteSuccess',
-  getSuccess: 'getSuccess',
-  getAllSuccess: 'getAllSuccess',
-  insertError: 'insertError',
-  updateError: 'updateError',
-  getError: 'getError',
-  getAllError: 'getAllError',
-  deleteError: 'deleteError',
-  dbError: 'dbError',
-  byIdError: 'byIdError',
-  idReq: 'idReq',
-  notAuthorized: 'notAuthorized',
-  databaseError: 'databaseError',
-  typeError: 'typeError',
-  databaseValidationError: 'databaseValidationError',
-  integerReq: 'integerReq',
-  boolReq: 'boolReq',
-  noEmployeeFound: 'noEmployeeFound',
-  noServiceFound: 'noServiceFound',
-  invalidAdmin: 'invalidAdmin',
-  invalidUser: 'invalidUser',
-  invalidVendor: 'invalidVendor',
-  alreadyExitsRecord: 'alreadyExitsRecord',
-  invalidLocations: 'invalidLocations',
-  invalidOperation: 'invalidOperation',
-  userNotFound: 'userNotFound',
-  provideReqParams: 'provideReqParams',
-  validBoolean: 'validBoolean',
+  success: "success",
+  serverError: "serverError",
+  apiNotFound: "apiNotFound",
+  invalidParams: "invalidParams",
+  dataNotFound: "dataNotFound",
+  noPermission: "noPermission",
+  insertSuccess: "insertSuccess",
+  insertBulkSuccess: "insertBulkSuccess",
+  updateSuccess: "updateSuccess",
+  deleteSuccess: "deleteSuccess",
+  getSuccess: "getSuccess",
+  getAllSuccess: "getAllSuccess",
+  insertError: "insertError",
+  updateError: "updateError",
+  getError: "getError",
+  getAllError: "getAllError",
+  deleteError: "deleteError",
+  dbError: "dbError",
+  byIdError: "byIdError",
+  idReq: "idReq",
+  notAuthorized: "notAuthorized",
+  databaseError: "databaseError",
+  typeError: "typeError",
+  databaseValidationError: "databaseValidationError",
+  integerReq: "integerReq",
+  boolReq: "boolReq",
+  noEmployeeFound: "noEmployeeFound",
+  noServiceFound: "noServiceFound",
+  invalidAdmin: "invalidAdmin",
+  invalidUser: "invalidUser",
+  invalidVendor: "invalidVendor",
+  alreadyExitsRecord: "alreadyExitsRecord",
+  invalidLocations: "invalidLocations",
+  invalidOperation: "invalidOperation",
+  userNotFound: "userNotFound",
+  provideReqParams: "provideReqParams",
+  validBoolean: "validBoolean",
   ipPermissionDeny: "ipPermissionDeny",
   limitInValid: "limitInValid",
-  pageInValid: "pageInValid"
-}
-
+  pageInValid: "pageInValid",
+};
 
 /**
  * Response data with status code 200 (OK)
@@ -70,11 +69,11 @@ const rS200 = (res, data = {}, message = msg.success) => {
   const result = {
     success: true,
     message,
-    code
-  }
-  result.data = _.isEmpty(data) ? undefined : data
-  return res.status(HttpStatus.OK).send(result)
-}
+    code,
+  };
+  result.data = _.isEmpty(data) ? undefined : data;
+  return res.status(HttpStatus.OK).send(result);
+};
 /**
  * Response data with status code 200 (OK)
  *
@@ -84,14 +83,13 @@ const rS200 = (res, data = {}, message = msg.success) => {
  * @param {String} message key to get code and message
  */
 const r200 = (res, data = {}, message = msg.success) => {
-  const code = HttpStatus.OK;
   const result = {
     message,
-    code
-  }
-  result.data = _.isEmpty(data) ? undefined : data
-  return res.status(HttpStatus.OK).send(result)
-}
+    code: HttpStatus.OK,
+  };
+  result.data = _.isEmpty(data) ? undefined : data;
+  return res.status(HttpStatus.OK).send(result);
+};
 
 /**
  * Response data with status code 201 (Created)
@@ -104,11 +102,11 @@ const r200 = (res, data = {}, message = msg.success) => {
 const r201 = (res, data = {}, message = msg.success) => {
   const result = {
     message,
-    code: HttpStatus.CREATED
-  }
-  result.data = _.isEmpty(data) ? undefined : data
-  return res.status(HttpStatus.CREATED).send(result)
-}
+    code: HttpStatus.CREATED,
+  };
+  result.data = _.isEmpty(data) ? undefined : data;
+  return res.status(HttpStatus.CREATED).send(result);
+};
 
 /**
  * Response data with status code 400 (BAD REQUEST)
@@ -117,13 +115,13 @@ const r201 = (res, data = {}, message = msg.success) => {
  * @param {String} locale locale of user
  * @param {String} message key to get code and message
  */
-const r400 = (res, message = invalidParams,) => {
+const r400 = (res, message = invalidParams) => {
   return res.status(HttpStatus.BAD_REQUEST).send({
     message,
     status: "failure",
     code: HttpStatus.BAD_REQUEST,
-  })
-}
+  });
+};
 
 /**
  * Response data with status code 401 (UNAUTHORIZED)
@@ -137,8 +135,8 @@ const r401 = (res, message = noPermission) => {
     message,
     status: "failure",
     code: HttpStatus.UNAUTHORIZED,
-  })
-}
+  });
+};
 
 /**
  * Response data with status code 404 (NOT FOUND)
@@ -152,9 +150,8 @@ const r404 = (res, message = dataNotFound) => {
     message,
     status: "failure",
     code: HttpStatus.NOT_FOUND,
-  })
-}
-
+  });
+};
 
 /**
  * Response data with status code 500 (SERVER ERROR)
@@ -167,9 +164,7 @@ const r500 = (res, message = serverError) => {
     message,
     status: "failure",
     code: HttpStatus.INTERNAL_SERVER_ERROR,
-  })
-}
+  });
+};
 
-
-
-export default { rS200, r200, r201, r400, r401, r404, r500, rS200 }
+export default { rS200, r200, r201, r400, r401, r404, r500, rS200 };

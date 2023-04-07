@@ -1,5 +1,5 @@
-import Admin from '../model/adminModel.js'
-import response from '../util/response.js';
+import Admin from "../model/adminModel.js";
+import response from "../util/response.js";
 
 // import crypto from 'crypto'
 // import { sendBrandApprovedMail, sendResetMail, sendProductApprovedMail } from '../email.js'
@@ -7,72 +7,59 @@ import response from '../util/response.js';
 //-------------GET ALL ADMIN-------------//
 export const get_admin = async (req, res) => {
   try {
-    const admin = await Admin.find({})
+    const admin = await Admin.find({});
     if (!admin) {
-      throw Error('NO ADMIN FOUND')
+      throw Error("NO ADMIN FOUND");
     }
-    response.r200(res, admin)
+    response.r200(res, admin);
   } catch (error) {
     res.status(500).send(error);
   }
-}
+};
 
 //-------------NEW ADMIN-------------//
 export const add_admin = async (req, res) => {
   try {
-    const admin = await new Admin(req.body)
-    await admin.save()
-    const token = await admin.generateAuthToken()
+    const admin = await new Admin(req.body);
+    await admin.save();
+    const token = await admin.generateAuthToken();
 
-    response.r200(res, { admin, token })
+    response.r200(res, { admin, token });
   } catch (error) {
     res.status(500).send(error);
   }
-}
+};
 
 //-------------LOGIN ADMIN-------------//
 export const login = async (req, res) => {
   try {
-    const admin = await Admin.findByCredentials(req.body.email, req.body.password)
-    const token = await admin.generateAuthToken()
+    const admin = await Admin.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    const token = await admin.generateAuthToken();
     if (!admin) {
-      throw new Error('Invalid Attempt, Admin not Found!')
+      throw new Error("Invalid Attempt, Admin not Found!");
     }
-    response.r200(res, { admin, token })
+    response.r200(res, { admin, token });
   } catch (error) {
-    res.status(500).send({ message: error.message })
+    res.status(500).send({ message: error.message });
   }
-}
+};
 
 //-------------LOGOUT ADMIN-------------//
 export const logout = async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter((token) => {
-      return token.token !== req.token
-    })
-    await req.user.save()
+      return token.token !== req.token;
+    });
+    await req.user.save();
 
-    response.r200(res, {}, 'Logged Out!')
+    response.r200(res, {}, "Logged Out!");
   } catch (error) {
-    res.status(500).send(error)
+    res.status(500).send(error);
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+};
 
 // //----GET All Admin
 // router.get('/admin/self', auth, async (req, res) => {
@@ -82,8 +69,6 @@ export const logout = async (req, res) => {
 //     res.send(error)
 //   }
 // })
-
-
 
 //----User logout from all devices
 // router.post('/admin/logoutall', auth, async (req, res) => {
@@ -95,8 +80,6 @@ export const logout = async (req, res) => {
 //     res.status(500).send(error)
 //   }
 // })
-
-
 
 // //----Admin updates its profile
 // router.patch('/admin/me', auth, async (req, res) => {
@@ -205,8 +188,6 @@ export const logout = async (req, res) => {
 //     res.send(error)
 //   }
 // })
-
-
 
 // router.post('/admin/reset/:token', async (req, res) => {
 //   try {

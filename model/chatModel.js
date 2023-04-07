@@ -2,16 +2,17 @@ import mongoose from "mongoose";
 
 const chatSchema = mongoose.Schema(
   {
-    chatName: { type: String, trim: true },
-    vendors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' }],
+    vendors: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Vendor", required: true },
+    ],
     latestMessage: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Message',
+      ref: "Message",
     },
   },
   { timestamps: true }
 );
 
-const Chat =  mongoose.model('Chat', chatSchema)
+const Chat = mongoose.model("Chat", chatSchema);
 
 export default Chat;

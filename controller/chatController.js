@@ -1,14 +1,14 @@
-import VENDOR from '../model/vendorModel.js';
-import CHAT from '../model/chatModel.js';
-import response from '../util/response.js';
+import VENDOR from "../model/vendorModel.js";
+import CHAT from "../model/chatModel.js";
+import response from "../util/response.js";
 
 //-------------NEW CHAT-------------//
 export const newChat = async (req, res) => {
   try {
-    const chat = await new CHAT(req.body)
-    await chat.save()
+    const chat = await new CHAT(req.body);
+    await chat.save();
 
-    response.r200(res, chat)
+    response.r200(res, chat);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -17,14 +17,36 @@ export const newChat = async (req, res) => {
 //-------------GET CHATS-------------//
 export const fetchChats = async (req, res) => {
   try {
-    const chats = await CHAT.find({ vendors: { $elemMatch: { $eq: req._id } } }).populate("latestMessage").sort({ updatedAt: -1 })
+    const chats = await CHAT.find({
+      vendors: { $elemMatch: { $eq: req.params._id } },
+    })
+      .select("-createdAt -__v")
+      .sort({ updatedAt: -1 })
+      .populate("latestMessage", "content")
+      .populate("vendors", "name");
+
+    response.r200(res, { chats });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+//-------------FISRT CHAT-------------//
+export const firstChat = async (req, res) => {
+  try {
+    const { chatId, to } = req.params;
+
+    const chats = await CHAT.find({
+      vendors: { $elemMatch: { $eq: chatId, to } },
+    })
+      .populate("latestMessage")
+      .sort({ updatedAt: -1 });
 
     const results = await VENDOR.populate(chats, {
       path: "latestMessage.sender",
       // select: "name pic email",
     });
-    res.status(200).send(results);
-
+    res.status(200).send({ data: "results" });
   } catch (error) {
     res.status(500).send(error);
   }

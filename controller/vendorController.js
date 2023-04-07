@@ -1,5 +1,5 @@
-import VENDOR from '../model/vendorModel.js'
-import response from '../util/response.js';
+import VENDOR from "../model/vendorModel.js";
+import response from "../util/response.js";
 // import crypto from 'crypto'
 // import otp from 'otp-generator'
 // import { sendCouponMail, sendWelcomeMail, sendResetMail, sendOtpMail, sendRedeemMail } from '../email.js'
@@ -7,78 +7,60 @@ import response from '../util/response.js';
 //-------------GET ALL VENDOR-------------//
 export const get_vendor = async (req, res) => {
   try {
-    const vendor = await VENDOR.find({})
+    const vendor = await VENDOR.find({});
     if (!vendor) {
-      throw Error('NO vendor FOUND')
+      throw Error("NO vendor FOUND");
     }
-    response.r200(res, vendor)
+    response.r200(res, vendor);
   } catch (error) {
-    res.status(500).send(error)
+    res.status(500).send(error);
   }
-}
+};
 
 //-------------NEW VENDOR-------------//
 export const add_vendor = async (req, res) => {
   try {
-    const vendor = await new VENDOR(req.body)
-    await vendor.save()
-    const token = await vendor.generateAuthToken()
-    response.r200(res, { name:vendor?.name, token })
+    const vendor = await new VENDOR(req.body);
+    await vendor.save();
+    const token = await vendor.generateAuthToken();
+    response.r200(res, { name: vendor?.name, _id: vendor._id, token });
   } catch (error) {
-    res.status(500).send(error)
+    res.status(500).send(error);
   }
-}
+};
 
 //-------------LOGIN VENDOR-------------//
 export const login = async (req, res) => {
   try {
-    const vendor = await VENDOR.findByCredentials(req.body.email, req.body.password)
-    const token = await vendor.generateAuthToken()
+    const vendor = await VENDOR.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    const token = await vendor.generateAuthToken();
     if (!vendor) {
-      throw new Error('Invalid Attempt, vendor not Found!')
+      throw new Error("Invalid Attempt, vendor not Found!");
     }
-    response.r200(res, { name:vendor?.name, token })
+    response.r200(res, { name: vendor?.name, _id: vendor?._id, token });
   } catch (error) {
-    res.status(500).send({ message: error.message })
+    res.status(500).send({ message: error.message });
   }
-}
+};
 
 //-------------LOGOUT VENDOR-------------//
 export const logout = async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter((token) => {
-      return token.token !== req.token
-    })
-    await req.user.save()
+      return token.token !== req.token;
+    });
+    await req.user.save();
 
-    response.r200(res, {}, 'Logged Out!')
+    response.r200(res, {}, "Logged Out!");
   } catch (error) {
-    res.status(500).send(error)
+    res.status(500).send(error);
   }
-}
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// //----GET All User 
+// //----GET All User
 // router.get('/user', async (req, res) => {
 //   try {
 //     const user = await User.find({})
@@ -90,7 +72,7 @@ export const logout = async (req, res) => {
 //     res.status(400).send(error)
 //   }
 // })
-// //----GET All User 
+// //----GET All User
 // router.get('/user/:type', async (req, res) => {
 //   try {
 //     const user = await User.find({ currentMemberType: req.params.type })
@@ -223,7 +205,7 @@ export const logout = async (req, res) => {
 //     res.status(500).send(error)
 //   }
 // })
-// //----New User Join via otp 
+// //----New User Join via otp
 // router.post('/user', async (req, res) => {
 
 //   try {
@@ -259,7 +241,6 @@ export const logout = async (req, res) => {
 //     res.send(error)
 //   }
 // })
-
 
 // //----User updates its profile
 // router.patch('/user/me', auth, async (req, res) => {
@@ -309,7 +290,6 @@ export const logout = async (req, res) => {
 //     const Buff = crypto.randomBytes(32)
 //     const token = Buff.toString('hex')
 
-
 //     const user = await User.findOne({ email: req.body.email })
 //     if (!user) {
 //       throw new Error('Unable to find account ')
@@ -338,8 +318,6 @@ export const logout = async (req, res) => {
 //   }
 // })
 
-
-
 // router.post('/user/reset/:token', async (req, res) => {
 //   try {
 //     const user = await User.findOne({ resetPasswordToken: req.params.token, expireToken: { $gt: Date.now() } })
@@ -355,6 +333,5 @@ export const logout = async (req, res) => {
 //     res.send(error)
 //   }
 // })
-
 
 // export default router

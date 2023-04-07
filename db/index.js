@@ -1,15 +1,18 @@
-import dotenv from 'dotenv'
-import mongoose from 'mongoose'
-dotenv.config()
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+dotenv.config();
 
 const URL = process.env.URL;
 
-mongoose.connect(URL, {
+mongoose
+  .connect(URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-}).then(() => {
+  })
+  .then(() => {
     console.log("Connected with MONGO_DB");
-}).catch((err) => {
+  })
+  .catch((err) => {
     console.log(err);
     console.log("Connection has not been extablished with database");
-})
+  });

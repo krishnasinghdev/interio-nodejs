@@ -1,17 +1,20 @@
-import express from 'express';
-import cors from 'cors';
-import './db/index.js';
-import dotenv from 'dotenv';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
-import Message from './model/messageModal.js';
-
-import router from './routes/index.js';
+import express from "express";
+import cors from "cors";
+import "./db/index.js";
+import dotenv from "dotenv";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import MESSAGE from "./model/messageModal.js";
+import VENDOR from "./model/vendorModel.js";
+import CHAT from "./model/chatModel.js";
+import jwt from "jsonwebtoken";
+import router from "./routes/index.js";
 
 dotenv.config();
+const JWT = process.env.JWT;
 const PORT = process.env.PORT;
 const corsOptions = {
-  origin: '*',
+  origin: "*",
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -26,30 +29,76 @@ app.use(router);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: '*',
+    origin: "*",
   },
 });
 
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+let users = [];
 
-  socket.on('message', (data) => {
-    const message = new Message({ ...data });
+const addUser = (userId, socketId) => {
+  console.log("from adduser", userId, socketId);
+  !users.some((user) => user.userId === userId) &&
+    users.push({ userId, socketId });
+};
+
+const removeUser = (socketId) => {
+  users = users.filter((user) => user.socketId !== socketId);
+};
+
+const getUser = (userId) => {
+  return users.find((user) => user.userId === userId);
+};
+
+io.on("connection", (socket) => {
+
+  socket.on('new-chat', async (data) => {
+    const { _id } = jwt.verify(data.token, JWT);
+
+    const chat = new CHAT({ vendors: [_id, data.with] });
+    await VENDOR.findOneAndUpdate({ _id }, { socketId: socket.id });
+    await chat.save((err) => {
+      if (err) return console.error(err);
+    });
+    io.emit('chat-begin', {
+      chatId: chat._id,
+      vendorId: data.with,
+    });
+  });
+
+  //take userId and socketId from user
+  socket.on("addUser", ({ userId }) => {
+    addUser(userId, socket.id);
+    io.emit("getUsers", users);
+  });
+
+  //send and get message
+  socket.on("sendMessage", async ({ from, to, chat, content }) => {
+    const user = getUser(to);
+    if (user.socketId) {
+      io.to(user.socketId).emit("getMessage", {
+        sender: from,
+        message: content,
+      });
+    }
+    const message = new MESSAGE({
+      sender: to,
+      content,
+      chat,
+      readBy: [],
+    });
     message.save((err) => {
       if (err) return console.error(err);
     });
-    const d = io.to(data.to).emit('message', data);
-    console.log(d);
+    await CHAT.findOneAndUpdate({ _id: chat }, { latestMessage: message._id });
   });
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+
+  //when disconnect
+  socket.on("disconnect", () => {
+    removeUser(socket.id);
+    io.emit("getUsers", users);
   });
 });
 
 httpServer.listen(PORT, () => {
-  console.log('Server is up on the port : ' + PORT);
+  console.log("Server is up on the port : " + PORT);
 });
-
-// app.listen(PORT, () => {
-//     console.log('Server is up on the port : ' + PORT)
-// })
