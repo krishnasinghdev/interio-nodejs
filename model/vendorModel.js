@@ -1,17 +1,17 @@
-import mongoose from "mongoose";
-import validator from "validator";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import dotenv from "dotenv";
+import mongoose from 'mongoose';
+import validator from 'validator';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
 dotenv.config();
 const JWT = process.env.JWT;
-mongoose.set("strictQuery", true);
+mongoose.set('strictQuery', true);
 
 const vendorSchema = new mongoose.Schema(
   {
     type: {
       type: String,
-      default: "vendor",
+      default: 'vendor',
     },
     socketId: {
       type: String,
@@ -21,6 +21,12 @@ const vendorSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
+    // username: {
+    //   type: String,
+    //   trim: true,
+    //   required: true,
+    //   unique: true,
+    // },
     email: {
       type: String,
       unique: true,
@@ -28,7 +34,7 @@ const vendorSchema = new mongoose.Schema(
       required: true,
       validate(value) {
         if (!validator.isEmail(value)) {
-          throw new Error("Enter a valid email address");
+          throw new Error('Enter a valid email address');
         }
       },
     },
@@ -36,7 +42,7 @@ const vendorSchema = new mongoose.Schema(
       type: Number,
       validate(value) {
         if (!value.length === 10) {
-          throw new Error("Enter a valid contact number");
+          throw new Error('Enter a valid contact number');
         }
       },
     },
@@ -82,31 +88,9 @@ const vendorSchema = new mongoose.Schema(
         duration: String,
       },
     ],
-    likedShot: [
-      {
-        id: mongoose.Schema.Types.ObjectId,
-        image: String,
-        performance: {
-          like: { type: Number },
-          comments: { type: Number },
-          view: { type: Number },
-        },
-      },
-    ],
-    shopProduct: [
-      {
-        id: String,
-        image: String,
-        price: Number,
-      },
-    ],
-    shotCollections: [
-      {
-        id: String,
-        image: String,
-        performance: Array,
-      },
-    ],
+    ownShot: [mongoose.Schema.Types.ObjectId],
+    likedShot: [mongoose.Schema.Types.ObjectId],
+    shotCollections: [mongoose.Schema.Types.ObjectId],
     socialLinks: [
       {
         platform: String,
@@ -148,10 +132,10 @@ const vendorSchema = new mongoose.Schema(
   }
 );
 
-vendorSchema.virtual("Shot", {
-  ref: "shotModel",
-  localField: "_id",
-  foreignField: "owner",
+vendorSchema.virtual('Shot', {
+  ref: 'shotModel',
+  localField: '_id',
+  foreignField: 'owner',
 });
 
 vendorSchema.methods.toJSON = function () {
@@ -181,23 +165,23 @@ vendorSchema.statics.findByCredentials = async (email, password) => {
     email,
   });
   if (!vendor) {
-    throw new Error("Invalid vendorname or Sign up first !!");
+    throw new Error('Invalid vendor name or Sign up first !!');
   }
   const isMatch = await bcrypt.compare(password, vendor.password);
   if (!isMatch) {
-    throw new Error("Invalid Password!");
+    throw new Error('Invalid Password!');
   }
   return vendor;
 };
 
-vendorSchema.pre("save", async function (next) {
+vendorSchema.pre('save', async function (next) {
   const vendor = this;
-  if (vendor.isModified("password")) {
+  if (vendor.isModified('password')) {
     vendor.password = await bcrypt.hash(vendor.password, 8);
   }
   next();
 });
 
-const Vendor = mongoose.model("Vendor", vendorSchema);
+const Vendor = mongoose.model('Vendor', vendorSchema);
 
 export default Vendor;

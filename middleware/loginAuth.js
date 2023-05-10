@@ -10,7 +10,8 @@ const loginAuth = async (req, res, next) => {
     const token = req.header("Authorization").replace("Bearer ", "");
     const decoded = jwt.verify(token, JWT);
     let user;
-    if (req.body.role === "_admin") {
+    
+    if (req.body.role && req.body?.role === "_admin") {
       user = await ADMIN.findOne({ _id: decoded._id, "tokens.token": token });
     } else {
       user = await VENDOR.findOne({ _id: decoded._id, "tokens.token": token });
@@ -24,7 +25,7 @@ const loginAuth = async (req, res, next) => {
     req._id = decoded._id;
     next();
   } catch (error) {
-    res.status(401).send({ error: "Please Authenticate", error });
+    res.status(401).send({ alert: "Please Authenticate",error });
   }
 };
 

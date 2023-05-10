@@ -1,20 +1,14 @@
 import mongoose from "mongoose";
-mongoose.set("strictQuery", false);
+mongoose.set("strictQuery", true);
 
-const shotSchema = new mongoose.Schema(
+const collectionSchema = new mongoose.Schema(
   {
     cname: {
       type: String,
       trim: true,
       required: true,
     },
-    shots: [
-      {
-        shot: {
-          type: String,
-        },
-      },
-    ],
+    shots: [mongoose.Schema.Types.ObjectId],
     owner: {
       type: String,
       requied: true,
@@ -26,6 +20,6 @@ const shotSchema = new mongoose.Schema(
   }
 );
 
-const Shot = new mongoose.model("Shot", shotSchema);
+const Collection = new mongoose.model("Collection", collectionSchema);
 
-export default Shot;
+export default Collection;

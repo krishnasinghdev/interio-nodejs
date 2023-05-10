@@ -1,5 +1,5 @@
-import mongoose, { Mongoose } from "mongoose";
-mongoose.set("strictQuery", false);
+import mongoose from "mongoose";
+mongoose.set("strictQuery", true);
 
 const shotSchema = new mongoose.Schema(
   {
@@ -32,7 +32,7 @@ const shotSchema = new mongoose.Schema(
       requied: true,
       ref: "Vendor",
     },
-    like: [{ type: mongoose.Schema.Types.ObjectId }],
+    like: [ mongoose.Schema.Types.ObjectId ],
     comments: [
       {
         v_id: String,
