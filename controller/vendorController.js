@@ -19,6 +19,19 @@ export const get_vendor = async (req, res) => {
   }
 };
 
+//-------------GET VENDOR COLLECTION-------------//
+export const get_collection = async (req, res) => {
+  try {
+    const vendor = await VENDOR.findOne({_id: req._id}).select('shotCollections');
+    if (!vendor) {
+      throw Error('NO vendor FOUND');
+    }
+    response.r200(res, vendor);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 //-------------GET VENDOR TABS-------------//
 export const get_tabs = async (req, res) => {
   try {
