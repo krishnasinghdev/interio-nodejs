@@ -28,8 +28,12 @@ export const add_shot = async (req, res) => {
 
 //-------------GET ALL SHOT-------------//
 export const get_shot = async (req, res) => {
+  let { limit } = req.query
+  if (!limit) {
+    limit = 10
+  }
   try {
-    const shot = await SHOT.find({})
+    const shot = await SHOT.find({}).limit(parseInt(limit))
       .select('title category description tags images owner')
       .populate('owner', 'name follower following likedshot email');
 
